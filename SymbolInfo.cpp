@@ -13,6 +13,7 @@ public:
 
     SymbolInfo* createNext(string name, string type);
     SymbolInfo* getNext();
+    void setNext(SymbolInfo* nextPtr);
     string getName();
     string getType();
 };
@@ -43,6 +44,10 @@ string SymbolInfo::getType() {
 
 SymbolInfo* SymbolInfo::getNext() {
     return next;
+}
+
+void SymbolInfo::setNext(SymbolInfo* nextPtr) {
+    this->next = nextPtr;
 }
 
 SymbolInfo* SymbolInfo::createNext(string name, string type) {

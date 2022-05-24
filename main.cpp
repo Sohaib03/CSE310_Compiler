@@ -1,21 +1,22 @@
 #include<iostream>
 #include<string>
-#include "SymbolInfo.cpp"
+#include "ScopeTable.cpp"
 
 using namespace std;
 
 int main() {
-    SymbolInfo* ptr = new SymbolInfo("Hello", "World");
-    ptr->createNext("Bye", "World")->createNext("Crazy", "World");
+    ScopeTable st(6);
+    st.setId("1");
 
-    SymbolInfo* cpyPtr = ptr;
+    st.insert("hello", "NUMBER");
+    st.insert("world", "NUMBER");
+    st.insert("copy", "FUNCTION");
+    st.insert("<" , "RELOP");
+    st.insert("<=" , "RELOP");
+    st.insert(">" , "RELOP");
+    st.insert(">=" , "RELOP");
 
-    while(ptr != nullptr) {
-        cout << ptr->getName() << " : " << ptr->getType() << endl;
+    st.print();
 
-        ptr = ptr->getNext();
-    }
-
-    cpyPtr->createNext("Santa", "Claus");
-    delete cpyPtr;
+    cout << st.lookUp("hello")->getType() << endl;
 }
