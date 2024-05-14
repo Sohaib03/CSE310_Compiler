@@ -1,0 +1,172 @@
+.MODEL SMALL
+
+.STACK 100H
+
+.DATA 
+print_var DW ?
+
+
+.CODE
+PRINTLN PROC NEAR
+	PUSH AX
+	PUSH BX
+	PUSH CX
+	PUSH DX
+	
+	MOV AX, print_var
+	OR AX, AX
+	JGE @END_IF1
+	PUSH AX
+	MOV DL, '-'
+	MOV AH, 2
+	INT 21H
+	POP AX
+	NEG AX
+
+@END_IF1:
+	XOR CX, CX
+	MOV BX, 10D
+
+@REPEAT:
+	XOR DX, DX
+	DIV BX
+	PUSH DX
+	INC CX
+	OR AX, AX
+	JNE @REPEAT
+	MOV AH, 2
+
+@PRINT_LOOP:
+	POP DX
+	OR DL, 30H
+	INT 21H
+	LOOP @PRINT_LOOP
+	MOV DL, 0DH
+	MOV AH, 2
+	INT 21H
+	MOV DL, 0AH
+	MOV AH, 2
+	INT 21H
+	POP DX
+	POP CX
+	POP BX
+	POP AX
+	RET
+
+PRINTLN ENDP
+
+foo PROC
+	PUSH AX
+	PUSH BX
+	PUSH CX
+	PUSH BP 		;Storing BP for last scope
+	MOV BP, SP
+	PUSH [BP - -12] 
+	PUSH [BP - -10] 
+	POP AX
+	POP BX
+	ADD AX, BX
+	PUSH AX
+	PUSH 5
+	POP BX
+	POP AX
+	CMP AX, BX
+	JLE @L1
+	PUSH 0
+	JMP @L2
+	@L1: 
+	PUSH 1
+	@L2:  		 ; a+b<=5
+
+	POP AX
+	CMP AX, 0
+	JE @L3
+	PUSH 7
+	POP DX
+	JMP @L0
+	JMP @L4 		 ; IF ENDED
+	@L3: 		 ; ELSE STARTED
+	@L4:  		;IF END
+	PUSH [BP - -12] 
+	PUSH 2
+	POP BX
+	POP AX
+	SUB AX, BX
+	PUSH AX
+	PUSH [BP - -10] 
+	PUSH 1
+	POP BX
+	POP AX
+	SUB AX, BX
+	PUSH AX
+	CALL foo
+	PUSH DX
+	PUSH 2
+	PUSH [BP - -12] 
+	PUSH 1
+	POP BX
+	POP AX
+	SUB AX, BX
+	PUSH AX
+	PUSH [BP - -10] 
+	PUSH 2
+	POP BX
+	POP AX
+	SUB AX, BX
+	PUSH AX
+	CALL foo
+	PUSH DX
+	POP AX
+	POP BX
+	MUL BX
+	PUSH AX
+	POP AX
+	POP BX
+	ADD AX, BX
+	PUSH AX
+	POP DX
+	JMP @L0
+	@L0: 
+	MOV SP, BP
+	POP BP
+	POP CX
+	POP BX
+	POP AX
+	RET 4
+foo ENDP
+
+MAIN PROC
+	MOV AX, @DATA
+	MOV DS, AX
+	PUSH BP 		;Storing BP for last scope
+	MOV BP, SP
+	ADD SP, -2
+	ADD SP, -2
+	ADD SP, -2
+	PUSH 7
+	POP AX
+	MOV [BP - 2], AX 		;i=7
+
+	PUSH 3
+	POP AX
+	MOV [BP - 4], AX 		;j=3
+
+	PUSH [BP - 2] 
+	PUSH [BP - 4] 
+	CALL foo
+	PUSH DX
+	POP AX
+	MOV [BP - 6], AX 		;k=foo(i,j)
+
+	MOV AX, [BP - 6]
+	MOV print_var, AX
+	CALL PRINTLN
+	PUSH 0
+	POP DX
+	JMP @L5
+	@L5: 
+	MOV AX, 4CH
+	INT 21H
+MAIN ENDP
+END MAIN
+

@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.ejs": "html",
+        "*.tmpl": "html",
+        "*.tcc": "cpp",
+        "unordered_map": "cpp",
+        "ostream": "cpp"
+    }
+}
